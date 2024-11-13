@@ -1,0 +1,59 @@
+# Create the raspberry OS image for SDCard, output in $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 (ex: raspios-bookworm-2024-08-22.qcow2)
+FROM debian:latest
+ARG DEBIAN_FRONTEND="noninteractive"
+
+ARG BUILD_DIR=/build
+ARG DISTRO_DATE_FOLDER=2022-09-26
+ARG DISTRO_DATE=2022-09-22
+ARG DISTRO_NAME=bullseye
+ARG DISTRO_IMAGE_OUTPUT_FILE_NAME=raspios-$DISTRO_NAME-$DISTRO_DATE
+ARG DISTRO_FILE=$DISTRO_DATE-raspios-$DISTRO_NAME-arm64-lite.img
+ARG DISTRO_IMG=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-$DISTRO_DATE_FOLDER/$DISTRO_FILE.xz
+
+RUN apt-get update && apt-get install -y  \
+    libguestfs-tools \
+    libssl-dev \
+    wget \
+    openssl \
+    linux-image-generic \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/share/doc/* \
+    && rm -rf /usr/share/man/* \
+    && rm -rf /usr/share/locale/*
+
+# Download and extract image
+WORKDIR /tmp
+RUN wget -nv -O $DISTRO_FILE.xz $DISTRO_IMG \
+    && unxz $DISTRO_FILE.xz \
+    && mkdir -p /mnt/root /mnt/boot
+
+# Extract and modify system
+RUN guestfish add $DISTRO_FILE : run : mount /dev/sda1 / : copy-out / /mnt/boot : umount / : mount /dev/sda2 / : copy-out / /mnt/root \
+    && rm $DISTRO_FILE
+
+# Copy configurations and modify system settings
+COPY config/fstab /mnt/root/etc/
+COPY config/cmdline.txt /mnt/boot/
+COPY config/99-qemu.rules /mnt/root/etc/udev/rules.d/
+COPY config/login.conf /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service.d/override.conf
+
+RUN touch /mnt/boot/ssh \
+    && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /mnt/root/etc/ssh/sshd_config \
+    && sed -i 's/#PermitEmptyPasswords no/permitEmptyPasswords yes/' /mnt/root/etc/ssh/sshd_config \
+    && sed -i 's/^root:\*:/root::/' /mnt/root/etc/shadow \
+    && sed -i '/^pi/d' /mnt/root/etc/{shadow,passwd,group} \
+    && rm -r /mnt/root/home/pi \
+    && mkdir -p /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service.d/ \
+    && rm -f /mnt/root/usr/lib/systemd/system/userconfig.service \
+    && rm -f /mnt/root/etc/systemd/system/multi-user.target.wants/userconfig.service
+
+# Create final image
+WORKDIR $BUILD_DIR
+ARG DIST_IMAGE_PATH=$BUILD_DIR/distro.img
+
+RUN guestfish -N $BUILD_DIR/distro.img=bootroot:vfat:ext4:2G \
+    && guestfish add $BUILD_DIR/distro.img : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
+    && sfdisk --part-type $BUILD_DIR/distro.img 1 c \
+    && qemu-img convert -f raw -O qcow2 $BUILD_DIR/distro.img $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
+    && rm $BUILD_DIR/distro.img

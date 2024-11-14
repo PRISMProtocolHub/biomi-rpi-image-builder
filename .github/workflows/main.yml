@@ -46,6 +46,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          platforms: |
+            linux/amd6
+            linux/arm64
           build-args: |
             DISTRO_DATE_FOLDER=${{ inputs.distro_folder }}
             DISTRO_DATE=${{ inputs.distro_date }}

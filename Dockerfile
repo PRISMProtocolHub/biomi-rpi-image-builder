@@ -28,11 +28,9 @@ RUN wget -nv -O $DISTRO_FILE.xz $DISTRO_IMG \
     && unxz $DISTRO_FILE.xz \
     && mkdir -p /mnt/root /mnt/boot
 
-# Extract and modify system
 RUN guestfish add $DISTRO_FILE : run : mount /dev/sda1 / : copy-out / /mnt/boot : umount / : mount /dev/sda2 / : copy-out / /mnt/root \
     && rm $DISTRO_FILE
 
-# Copy configurations and modify system settings
 COPY config/fstab /mnt/root/etc/
 COPY config/cmdline.txt /mnt/boot/
 COPY config/99-qemu.rules /mnt/root/etc/udev/rules.d/
@@ -40,9 +38,11 @@ COPY config/login.conf /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service
 
 RUN touch /mnt/boot/ssh \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /mnt/root/etc/ssh/sshd_config \
-    && sed -i 's/#PermitEmptyPasswords no/permitEmptyPasswords yes/' /mnt/root/etc/ssh/sshd_config \
-    && sed -i 's/^root:\*:/root::/' /mnt/root/etc/shadow \
-    && sed -i '/^pi/d' /mnt/root/etc/{shadow,passwd,group} \
+    && sed -i 's/#PermitEmptyPasswords no/PermitEmptyPasswords yes/' /mnt/root/etc/ssh/sshd_config \
+    && sed -i 's/^root:\\*:/root::/' /mnt/root/etc/shadow \
+    && sed -i '/^pi/d' /mnt/root/etc/shadow \
+    && sed -i '/^pi/d' /mnt/root/etc/passwd \
+    && sed -i '/^pi/d' /mnt/root/etc/group \
     && rm -r /mnt/root/home/pi \
     && mkdir -p /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service.d/ \
     && rm -f /mnt/root/usr/lib/systemd/system/userconfig.service \
@@ -52,8 +52,10 @@ RUN touch /mnt/boot/ssh \
 WORKDIR $BUILD_DIR
 ARG DIST_IMAGE_PATH=$BUILD_DIR/distro.img
 
+RUN mkdir $DIST_FOLDER
 RUN guestfish -N $DIST_IMAGE_PATH=bootroot:vfat:ext4:2G \
     && guestfish add $DIST_IMAGE_PATH : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
     && sfdisk --part-type $DIST_IMAGE_PATH 1 c \
-    && qemu-img convert -f raw -O qcow2 $DIST_IMAGE_PATH $DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
+    && qemu-img convert -f raw -O qcow2 $DIST_IMAGE_PATH $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
+    && gzip $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
     && rm $DIST_IMAGE_PATH

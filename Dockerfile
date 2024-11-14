@@ -52,7 +52,6 @@ RUN touch /mnt/boot/ssh \
 WORKDIR $BUILD_DIR
 ARG DIST_IMAGE_PATH=$BUILD_DIR/distro.img
 
-RUN mkdir $DIST_FOLDER
 RUN guestfish -N $DIST_IMAGE_PATH=bootroot:vfat:ext4:2G \
     && guestfish add $DIST_IMAGE_PATH : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
     && sfdisk --part-type $DIST_IMAGE_PATH 1 c \

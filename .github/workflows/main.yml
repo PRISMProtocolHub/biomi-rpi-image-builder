@@ -1,4 +1,4 @@
-name: BIOMI-RPI-KERNEL-BUILDER
+name: BIOMI-RPI-IMAGE-BUILDER
 
 on:
   workflow_dispatch:

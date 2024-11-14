@@ -52,8 +52,8 @@ RUN touch /mnt/boot/ssh \
 WORKDIR $BUILD_DIR
 ARG DIST_IMAGE_PATH=$BUILD_DIR/distro.img
 
-RUN guestfish -N $BUILD_DIR/distro.img=bootroot:vfat:ext4:2G \
-    && guestfish add $BUILD_DIR/distro.img : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
-    && sfdisk --part-type $BUILD_DIR/distro.img 1 c \
-    && qemu-img convert -f raw -O qcow2 $BUILD_DIR/distro.img $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
-    && rm $BUILD_DIR/distro.img
+RUN guestfish -N $DIST_IMAGE_PATH=bootroot:vfat:ext4:2G \
+    && guestfish add $DIST_IMAGE_PATH : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
+    && sfdisk --part-type $DIST_IMAGE_PATH 1 c \
+    && qemu-img convert -f raw -O qcow2 $DIST_IMAGE_PATH $DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
+    && rm $DIST_IMAGE_PATH

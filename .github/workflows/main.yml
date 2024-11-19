@@ -47,7 +47,7 @@ jobs:
         with:
           push: true
           platforms: |
-            linux/amd6
+            linux/amd64
             linux/arm64
           build-args: |
             DISTRO_DATE_FOLDER=${{ inputs.distro_folder }}

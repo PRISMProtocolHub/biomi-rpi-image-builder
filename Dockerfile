@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y  \
     openssl \
     linux-image-generic \
     xz-utils \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/share/doc/* \
     && rm -rf /usr/share/man/* \

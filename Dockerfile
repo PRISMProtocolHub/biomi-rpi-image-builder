@@ -1,4 +1,4 @@
-# Create the raspberry OS image for SDCard, output in $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 (ex: raspios-bookworm-2024-08-22.qcow2)
+# Create the raspberry OS image for SDCard, output gzipped in $BUILD_DIR/raspios.qcow2.gz
 FROM debian:latest
 ARG DEBIAN_FRONTEND="noninteractive"
 

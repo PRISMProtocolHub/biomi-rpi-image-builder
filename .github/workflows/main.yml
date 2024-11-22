@@ -58,7 +58,7 @@ jobs:
             ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
 
       - name: Create container from image
-        run: docker create --name biomi-rpi-image-builder-container biomi-rpi-image-builder
+        run: docker create --name biomi-rpi-image-builder-container ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
 
       - name: Copy artifact from container
         run: docker cp biomi-rpi-kernel-image-container:/build/raspios.qcow2.gz /tmp/raspios.qcow2.gz

@@ -70,6 +70,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: /tmp/raspios.qcow2.gz
-          tag: ${{ github.ref_name }}
+          tag: ${{ inputs.distro_name }}-${{ inputs.distro_date }}
           name: Release raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -70,4 +70,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}.qcow2.gz
-          path: /build/raspios.qcow2.gz
+          path: /tmp/raspios.qcow2.gz

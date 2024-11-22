@@ -66,8 +66,10 @@ jobs:
       - name: Remove container
         run: docker rm biomi-rpi-image-builder-container
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Create Release and Upload Artifact
+        uses: ncipollo/release-action@v1
         with:
-          name: raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}.qcow2.gz
-          path: /tmp/raspios.qcow2.gz
+          artifacts: /tmp/raspios.qcow2.gz
+          tag: ${{ github.ref_name }}
+          name: Release raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}
+          token: ${{ secrets.GITHUB_TOKEN }}

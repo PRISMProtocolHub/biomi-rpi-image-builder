@@ -11,18 +11,41 @@ ARG DISTRO_IMAGE_OUTPUT_FILE_NAME=raspios
 ARG DISTRO_FILE=$DISTRO_DATE-raspios-$DISTRO_NAME-arm64-lite.img
 ARG DISTRO_IMG=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-$DISTRO_DATE_FOLDER/$DISTRO_FILE.xz
 
+# Install regular dependencies
 RUN apt-get update && apt-get install -y  \
     libguestfs-tools \
     libssl-dev \
     wget \
     openssl \
     linux-image-generic \
-    xz-utils \
+    xz-utils
+
+# Install Biomi specific dependencies and clean
+RUN apt-get install -y \
+    libatlas-base-dev \
+    libopencv-dev \
+    python3-pip \
+    python3-pyqt5 \
+    bluez \
+    bluez-tools \
+    bluetooth \
+    libbluetooth-dev \
+    python3-bluez \
+    python3-libcamera  \
+    python3-kms++  \
+    libcap-dev \
+    python3-venv \
+    pipx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/share/doc/* \
     && rm -rf /usr/share/man/* \
     && rm -rf /usr/share/locale/*
+
+# Python specific installs
+RUN pip install --upgrade pip &&  \
+    pip install --upgrade setuptools wheel \
+    pipx install pdm
 
 # Download and extract image
 WORKDIR /tmp

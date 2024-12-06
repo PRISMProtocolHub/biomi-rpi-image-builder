@@ -60,7 +60,8 @@ COPY config/fstab /mnt/root/etc/
 COPY config/cmdline.txt /mnt/boot/
 COPY config/99-qemu.rules /mnt/root/etc/udev/rules.d/
 COPY config/login.conf /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service.d/override.conf
-COPY custom_init.sh /mnt/root/init.sh
+COPY custom_init.sh /mnt/root/root/init.sh
+RUN chmod +x /mnt/root/root/init.sh
 
 RUN touch /mnt/boot/ssh \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /mnt/root/etc/ssh/sshd_config \

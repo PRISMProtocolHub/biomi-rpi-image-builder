@@ -40,8 +40,8 @@ COPY config/login.conf /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service
 COPY custom_init.sh /mnt/root/usr/local/bin/init.sh
 RUN chmod +x /mnt/root/usr/local/bin/init.sh
 
-RUN sed -i '/exit 0/i /usr/local/bin/init.sh &' /etc/rc.local && \
-    chmod +x /etc/rc.local
+RUN sed -i '/exit 0/i /usr/local/bin/init.sh &' /mnt/root/etc/rc.local && \
+    chmod +x /mnt/root/etc/rc.local
 
 RUN touch /mnt/boot/ssh \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /mnt/root/etc/ssh/sshd_config \

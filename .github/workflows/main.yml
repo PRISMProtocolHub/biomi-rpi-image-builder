@@ -12,11 +12,6 @@ on:
       distro_date:
         description: "Raspberry OS remote image date (prefix for the image name, ex: 2024-10-22 for 2024-10-22-raspios-bookworm-arm64-lite.img.xz)"
         required: true
-      custom_init:
-        description: "Use a custom init script"
-        type: boolean
-        default: false
-        required: false
 
 env:
   IMAGE_NAME: ghcr.io/prismprotocolhub/biomi-rpi-image-builder

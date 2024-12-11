@@ -1,10 +1,9 @@
 #!/bin/bash
-
 # Mount the host environment shared folder in QEMU
-#mount -t 9p -o trans=virtio hostshare /mnt/hostshare
-#mkdir -p /mnt/hostshare
+echo "=== Init script exists ==="
 
 # Execute custom init script
 if [[ -f /mnt/hostshare/init.sh ]];
+  echo "Trigger custom init script..."
   then /mnt/hostshare/init.sh
 fi

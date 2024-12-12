@@ -10,19 +10,25 @@ ARG DISTRO_IMAGE_OUTPUT_FILE_NAME=raspios
 ARG DISTRO_FILE=$DISTRO_DATE-raspios-$DISTRO_NAME-arm64-lite.img
 ARG DISTRO_IMG=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-$DISTRO_DATE_FOLDER/$DISTRO_FILE.xz
 
+# Add docker repository
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
+
 # Install regular dependencies
 RUN apt-get update && apt-get install -y  \
+    qemu-user-static \
     libguestfs-tools \
     libssl-dev \
     wget \
     openssl \
     linux-image-generic \
-    xz-utils \
-    && apt-get clean \
+    xz-utils && \
+    apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/share/doc/* \
     && rm -rf /usr/share/man/* \
     && rm -rf /usr/share/locale/*
+
 
 # Download and extract image
 WORKDIR /tmp
@@ -32,6 +38,15 @@ RUN wget -nv -O $DISTRO_FILE.xz $DISTRO_IMG \
 
 RUN guestfish add $DISTRO_FILE : run : mount /dev/sda1 / : copy-out / /mnt/boot : umount / : mount /dev/sda2 / : copy-out / /mnt/root \
     && rm $DISTRO_FILE
+
+# Use custom install script
+COPY custom_image_install.sh /mnt/root/tmp/custom_image_install.sh
+
+# Install dependencies using chroot and qemu
+RUN cp /usr/bin/qemu-arm-static /mnt/root/usr/bin/ && \
+    chmod +x /mnt/root/tmp/custom_image_install.sh && \
+    chroot /mnt/root /bin/bash /tmp/custom_image_install.sh && \
+    rm /mnt/root/usr/bin/qemu-arm-static
 
 COPY config/fstab /mnt/root/etc/
 COPY config/cmdline.txt /mnt/boot/

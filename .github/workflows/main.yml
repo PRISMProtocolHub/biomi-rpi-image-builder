@@ -6,6 +6,13 @@ on:
       distro_name:
         description: "Raspberry OS remote image name (ex: bookworm)"
         required: true
+      distro_type:
+        description: "Lite or full"
+        required: true
+        type: choice
+        options:
+          - full
+          - lite
       distro_folder:
         description: "Raspberry OS remote folder (generally a date, ex: 2024-10-28)"
         required: true
@@ -50,10 +57,9 @@ jobs:
             DISTRO_DATE_FOLDER=${{ inputs.distro_folder }}
             DISTRO_DATE=${{ inputs.distro_date }}
             DISTRO_NAME=${{ inputs.distro_name }}
-            USE_CUSTOM_INIT_SCRIPT=${{ inputs.custom_init }}
+            FULL_DISTRO_IMAGE_TYPE=${{ inputs.distro_type }}
           tags: |
             ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ inputs.distro_name }}-${{ inputs.distro_date }}
-            ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
 
       - name: Create container from image
         run: docker create --name biomi-rpi-image-builder-container ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
@@ -64,11 +70,11 @@ jobs:
       - name: Remove container
         run: docker rm biomi-rpi-image-builder-container
 
-      - name: Create Release raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}
+      - name: Create Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: /tmp/raspios.qcow2.gz
-          tag: ${{ inputs.distro_name }}-${{ inputs.distro_date }}
-          name: Release raspios-${{ inputs.distro_name }}-${{ inputs.distro_date }}
+          tag: ${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
+          name: Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true

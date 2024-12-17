@@ -57,7 +57,7 @@ jobs:
             DISTRO_DATE_FOLDER=${{ inputs.distro_folder }}
             DISTRO_DATE=${{ inputs.distro_date }}
             DISTRO_NAME=${{ inputs.distro_name }}
-            FULL_DISTRO_IMAGE_TYPE=${{ inputs.distro_type }}
+            DISTRO_IMAGE_TYPE=${{ inputs.distro_type }}
           tags: |
             ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ inputs.distro_name }}-${{ inputs.distro_date }}
 

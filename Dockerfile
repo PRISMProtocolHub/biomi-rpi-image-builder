@@ -41,15 +41,6 @@ RUN wget -nv -O $DISTRO_FILE.xz $DISTRO_IMG \
 RUN guestfish add $DISTRO_FILE : run : mount /dev/sda1 / : copy-out / /mnt/boot : umount / : mount /dev/sda2 / : copy-out / /mnt/root \
     && rm $DISTRO_FILE
 
-# Use custom install script
-COPY custom_image_install.sh /mnt/root/tmp/custom_image_install.sh
-
-# Install dependencies using chroot and qemu
-RUN cp /usr/bin/qemu-arm-static /mnt/root/usr/bin/ && \
-    chmod +x /mnt/root/tmp/custom_image_install.sh && \
-    chroot /mnt/root /bin/bash /tmp/custom_image_install.sh && \
-    rm /mnt/root/usr/bin/qemu-arm-static
-
 COPY config/fstab /mnt/root/etc/
 COPY config/cmdline.txt /mnt/boot/
 COPY config/99-qemu.rules /mnt/root/etc/udev/rules.d/

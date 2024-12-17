@@ -8,9 +8,9 @@ ARG DISTRO_DATE=2022-09-22
 ARG DISTRO_NAME=bullseye
 ARG DISTRO_IMAGE_OUTPUT_FILE_NAME=raspios
 ARG DISTRO_IMAGE_TYPE=full
-ARG DISTRO_FILE=$DISTRO_DATE-raspios-$DISTRO_NAME-arm64-$DISTRO_IMAGE_TYPE.img
-ARG FULL_DISTRO_IMAGE_TYPE=raspios_$DISTRO_IMAGE_TYPE\_arm64
-ARG DISTRO_IMG=https://downloads.raspberrypi.com/$FULL_DISTRO_IMAGE_TYPE/images/$FULL_DISTRO_IMAGE_TYPE-$DISTRO_DATE_FOLDER/$DISTRO_FILE.xz
+ARG DISTRO_FILE="${DISTRO_DATE}-raspios-${DISTRO_NAME}-arm64-${DISTRO_IMAGE_TYPE}.img"
+ARG FULL_DISTRO_IMAGE_TYPE="raspios_${DISTRO_IMAGE_TYPE}_arm64"
+ARG DISTRO_IMG="https://downloads.raspberrypi.com/${FULL_DISTRO_IMAGE_TYPE}/images/${FULL_DISTRO_IMAGE_TYPE}-${DISTRO_DATE_FOLDER}/${DISTRO_FILE}.xz"
 
 # Add docker repository
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \

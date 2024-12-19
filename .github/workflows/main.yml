@@ -30,7 +30,7 @@ permissions:
 jobs:
   build:
     runs-on:
-      group: biomi-runners
+      group: base-runners
     steps:
       - name: Free up disk space on GitHub runner
         uses: jlumbroso/free-disk-space@main

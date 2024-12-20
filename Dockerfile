@@ -67,6 +67,8 @@ RUN touch /mnt/boot/ssh \
 # Create final image
 WORKDIR $BUILD_DIR
 ARG DIST_IMAGE_PATH=$BUILD_DIR/distro.img
+RUN cp /mnt/boot/kernel8.img $BUILD_DIR/kernel8.img \
+  && cp /mnt/boot/bcm2710-rpi-zero-2-w.dtb $BUILD_DIR/bcm2710-rpi-zero-2-w.dtb
 
 RUN guestfish -N $DIST_IMAGE_PATH=bootroot:vfat:ext4:2G \
     && guestfish add $DIST_IMAGE_PATH : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \

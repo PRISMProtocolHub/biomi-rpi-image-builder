@@ -6,6 +6,10 @@ on:
       distro_name:
         description: "Raspberry OS remote image name (ex: bookworm)"
         required: true
+        type: choice
+        options:
+          - bullseye
+          - bookworm
       distro_type:
         description: "Lite or full"
         required: true

@@ -78,7 +78,7 @@ jobs:
       - name: Create Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "/tmp/raspios.qcow2.gz,/tmp/kernel8.img,/tmp/bcm2710-rpi-zero-2-w.dtb"
+          artifacts: "/tmp/*"
           tag: ${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           name: Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           token: ${{ secrets.GITHUB_TOKEN }}

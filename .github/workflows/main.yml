@@ -72,8 +72,9 @@ jobs:
 
       - name: Copy artifact from container
         run: |
+          mkdir /tmp/dist
           for file in $(docker exec biomi-rpi-image-builder-container ls /build); do
-            docker cp biomi-rpi-image-builder-container:/build/$file /tmp/
+            docker cp biomi-rpi-image-builder-container:/build/$file /tmp/dist
           done
 
       - name: Remove container
@@ -82,7 +83,7 @@ jobs:
       - name: Create Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "/tmp/*"
+          artifacts: "/tmp/dist/*.img,/tmp/dist/*.dtb,/tmp/dist/*.gz"
           tag: ${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           name: Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           token: ${{ secrets.GITHUB_TOKEN }}

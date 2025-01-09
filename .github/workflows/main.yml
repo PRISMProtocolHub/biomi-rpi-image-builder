@@ -74,7 +74,7 @@ jobs:
         run: |
           mkdir /tmp/dist
           for file in $(docker exec biomi-rpi-image-builder-container ls /build); do
-            docker cp biomi-rpi-image-builder-container:/build/$file /tmp/dist
+            docker cp biomi-rpi-image-builder-container:/build/$file /tmp/dist/$file
           done
 
       - name: Remove container

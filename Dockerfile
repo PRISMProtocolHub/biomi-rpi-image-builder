@@ -45,6 +45,7 @@ COPY config/fstab /mnt/root/etc/
 COPY config/cmdline.txt /mnt/boot/
 COPY config/99-qemu.rules /mnt/root/etc/udev/rules.d/
 COPY config/login.conf /mnt/root/etc/systemd/system/serial-getty@ttyAMA0.service.d/override.conf
+COPY config/dphys-swapfile /etc/dphys-swapfile
 
 COPY custom_init.sh /mnt/root/usr/local/bin/custom_init.sh
 RUN chmod +x /mnt/root/usr/local/bin/custom_init.sh

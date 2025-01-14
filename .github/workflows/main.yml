@@ -33,8 +33,7 @@ permissions:
 
 jobs:
   build:
-    runs-on:
-      group: base-runners
+    runs-on: base-prism-runner
     steps:
       - name: Free up disk space on GitHub runner
         uses: jlumbroso/free-disk-space@main
@@ -67,23 +66,17 @@ jobs:
             ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ inputs.distro_name }}-${{ inputs.distro_date }}
             ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
 
-      - name: Create container from image
-        run: docker create --name biomi-rpi-image-builder-container ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }}
-
-      - name: Copy artifact from container
+      - name: Create container and copy files
         run: |
-          mkdir /tmp/dist
-          for file in $(docker exec biomi-rpi-image-builder-container ls /build); do
-            docker cp biomi-rpi-image-builder-container:/build/$file /tmp/dist/$file
-          done
-
-      - name: Remove container
-        run: docker rm biomi-rpi-image-builder-container
+          container_id=$(docker create ghcr.io/prismprotocolhub/biomi-rpi-image-builder:${{ github.sha }})
+          mkdir -p extracted_files
+          docker cp $container_id:/build/. ./extracted-files/
+          docker rm $container_id
 
       - name: Create Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "/tmp/dist/*.img,/tmp/dist/*.dtb,/tmp/dist/*.gz"
+          artifacts: "extracted-files/*"
           tag: ${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           name: Release raspios-${{ inputs.distro_type }}-${{ inputs.distro_name }}-${{ inputs.distro_date }}
           token: ${{ secrets.GITHUB_TOKEN }}

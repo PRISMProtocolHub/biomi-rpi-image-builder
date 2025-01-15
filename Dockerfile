@@ -75,4 +75,5 @@ RUN guestfish -N $DIST_IMAGE_PATH=bootroot:vfat:ext4:2G \
     && guestfish add $DIST_IMAGE_PATH : run : mount /dev/sda1 / : glob copy-in /mnt/boot/* / : umount / : mount /dev/sda2 / : glob copy-in /mnt/root/* / \
     && sfdisk --part-type $DIST_IMAGE_PATH 1 c \
     && qemu-img convert -f raw -O qcow2 $DIST_IMAGE_PATH $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
-    && gzip $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2
+    && gzip $BUILD_DIR/$DISTRO_IMAGE_OUTPUT_FILE_NAME.qcow2 \
+    && gzip $DIST_IMAGE_PATH

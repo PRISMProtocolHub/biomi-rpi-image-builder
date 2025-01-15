@@ -33,7 +33,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: base-prism-runner
+    runs-on: big-runner
     steps:
       - name: Free up disk space on GitHub runner
         uses: jlumbroso/free-disk-space@main
